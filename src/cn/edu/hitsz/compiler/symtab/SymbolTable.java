@@ -5,6 +5,7 @@ import cn.edu.hitsz.compiler.utils.FileUtils;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -16,6 +17,8 @@ import java.util.Map;
  */
 public class SymbolTable {
 
+    private static final Map<String, SymbolTableEntry> entries = new HashMap<>(); // 符号表, 目前只会有变量
+
     /**
      * 获取符号表中已有的条目
      *
@@ -23,8 +26,11 @@ public class SymbolTable {
      * @return 该符号在符号表中的条目
      * @throws RuntimeException 该符号在表中不存在
      */
-    public SymbolTableEntry get(String text) {
-        throw new NotImplementedException();
+    public SymbolTableEntry get(String text) throws RuntimeException {
+        if (!entries.containsKey(text)) {
+            throw new RuntimeException("Symbol not found: " + text);
+        }
+        return entries.get(text);
     }
 
     /**
@@ -34,8 +40,13 @@ public class SymbolTable {
      * @return 该符号在符号表中对应的新条目
      * @throws RuntimeException 该符号已在表中存在
      */
-    public SymbolTableEntry add(String text) {
-        throw new NotImplementedException();
+    public SymbolTableEntry add(String text) throws RuntimeException {
+        if (entries.containsKey(text)) {
+            throw new RuntimeException("Symbol already exists: " + text);
+        }
+        SymbolTableEntry newEntry = new SymbolTableEntry(text, ""); // 默认类型可以是空字符串或其他初始化值
+        entries.put(text, newEntry);
+        return newEntry;
     }
 
     /**
@@ -45,7 +56,7 @@ public class SymbolTable {
      * @return 该符号的条目是否位于符号表中
      */
     public boolean has(String text) {
-        throw new NotImplementedException();
+        return entries.containsKey(text);
     }
 
     /**
@@ -54,7 +65,7 @@ public class SymbolTable {
      * @return 符号表的所有条目
      */
     private Map<String, SymbolTableEntry> getAllEntries() {
-        throw new NotImplementedException();
+        return new HashMap<>(entries);
     }
 
     /**
@@ -63,7 +74,7 @@ public class SymbolTable {
      * @param path 输出文件路径
      */
     public void dumpTable(String path) {
-        final var entriesInOrder = new ArrayList<>(getAllEntries().values());
+        final ArrayList<SymbolTableEntry> entriesInOrder = new ArrayList<>(getAllEntries().values());
         entriesInOrder.sort(Comparator.comparing(SymbolTableEntry::getText));
 
         final var lines = new ArrayList<String>();
@@ -75,4 +86,3 @@ public class SymbolTable {
         FileUtils.writeLines(path, lines);
     }
 }
-
