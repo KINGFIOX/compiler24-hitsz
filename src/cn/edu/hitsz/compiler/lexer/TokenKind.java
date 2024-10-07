@@ -9,6 +9,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+// #[Derived(Eq, PartialEq, Hash)]
+// struct TokenKind {
+//     termName : String,
+//     code : i32,
+// };
+
 /**
  * 词法单元类型, 你不应该修改此文件
  * <br>
@@ -30,7 +36,10 @@ import java.util.Map;
  */
 public class TokenKind extends Term {
     // 允许用作 TokenKind 的 id 的字符串集合
+    // [ <"int", TokenKind{ termName : "int", code : 1 }>,
+    // <"return", TokenKind{ termName : "return", code : 2 }> ]
     private static final Map<String, TokenKind> allowed = new HashMap<>();
+    // EOF 不会在 coding_map.csv 中, 这里我们手动添加
     private static final TokenKind eof = new TokenKind("$", -1);
 
     /**
@@ -49,10 +58,14 @@ public class TokenKind extends Term {
             // 空格分割, 前面为码点, 后面为标识符
             final String[] words = line.split(" ");
             final int code = Integer.parseInt(words[0]); // 1 2 3 etc.
-            final String id = words[1]; // 'int' 'return' '=' ',' etc.
+            final String term = words[1]; // 'int' 'return' '=' ',' etc.
 
-            allowed.put(id, new TokenKind(id, code));
+            allowed.put(term, new TokenKind(term, code));
         }
+
+        // for (var token : allowed.entrySet()) {
+        // System.out.println(token);
+        // }
 
         // EOF
         allowed.put("$", eof);

@@ -18,7 +18,7 @@ public final class FileUtils {
      * @param path 文本文件路径
      * @return 文本内容
      */
-    public static String readFile(String path) {
+    public static String readFile(String path) throws RuntimeException {
         return String.join("\n", readLines(path));
     }
 
@@ -28,7 +28,7 @@ public final class FileUtils {
      * @param path 文本文件路径
      * @return 文本内容
      */
-    public static List<String> readLines(String path) {
+    public static List<String> readLines(String path) throws RuntimeException {
         try (final var lines = Files.lines(Paths.get(path))) {
             return lines.toList();
         } catch (IOException e) {
@@ -42,11 +42,11 @@ public final class FileUtils {
      * @param path    要写入的文件路径
      * @param content 要写入的内容
      */
-    public static void writeFile(String path, String content) {
+    public static void writeFile(String path, String content) throws RuntimeException {
         writeLines(path, List.of(content));
     }
 
-    public static void writeLines(String path, List<String> lines) {
+    public static void writeLines(String path, List<String> lines) throws RuntimeException {
         try {
             Files.write(Paths.get(path), lines, StandardCharsets.UTF_8);
         } catch (IOException e) {
@@ -59,7 +59,7 @@ public final class FileUtils {
      *
      * @param path 文件路径
      */
-    public static void tryCreateEmptyFile(String path) {
+    public static void tryCreateEmptyFile(String path) throws RuntimeException {
         try {
             Files.createFile(Paths.get(path));
         } catch (FileAlreadyExistsException e) {
@@ -71,12 +71,12 @@ public final class FileUtils {
 
     public static List<List<String>> readCSV(String path) {
         return readLines(path).stream()
-            // 当 limit 是 0 (调用无 limit 参数版本的 split 时就是这种情况) 时
-            // split 会忽略尾部的空白字符串, 而当 limit=-1 时不会忽略
-            // 这对 csv 是关键的, 因为 csv 里每行经常会有空白的末尾单元格
-            .map(line -> line.split(",", -1))
-            .map(Arrays::asList)
-            .toList();
+                // 当 limit 是 0 (调用无 limit 参数版本的 split 时就是这种情况) 时
+                // split 会忽略尾部的空白字符串, 而当 limit=-1 时不会忽略
+                // 这对 csv 是关键的, 因为 csv 里每行经常会有空白的末尾单元格
+                .map(line -> line.split(",", -1))
+                .map(Arrays::asList)
+                .toList();
     }
 
     private FileUtils() {

@@ -17,13 +17,13 @@ import cn.edu.hitsz.compiler.utils.IREmulator;
 import java.util.Objects;
 
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         // 构建符号表以供各部分使用
-        TokenKind.loadTokenKinds(); //
+        TokenKind.loadTokenKinds(); // [<'int', 1>, <'return', 2> ...]
         final SymbolTable symbolTable = new SymbolTable();
 
         // 词法分析
-        final var lexer = new LexicalAnalyzer(symbolTable);
+        final LexicalAnalyzer lexer = new LexicalAnalyzer(symbolTable);
         lexer.loadFile(FilePathConfig.SRC_CODE_PATH);
         lexer.run();
         lexer.dumpTokens(FilePathConfig.TOKEN_PATH);

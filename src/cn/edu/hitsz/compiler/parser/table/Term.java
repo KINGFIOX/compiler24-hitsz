@@ -1,5 +1,10 @@
 package cn.edu.hitsz.compiler.parser.table;
 
+// #[Derived(Eq, PartialEq, Hash)]
+// struct Term {
+//     termName : String,
+// };
+
 /**
  * 文法符号, 你不应该修改此文件
  * <br>

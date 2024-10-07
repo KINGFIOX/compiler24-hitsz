@@ -1,6 +1,5 @@
 package cn.edu.hitsz.compiler.symtab;
 
-import cn.edu.hitsz.compiler.NotImplementedException;
 import cn.edu.hitsz.compiler.utils.FileUtils;
 
 import java.util.ArrayList;
@@ -9,7 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 符号表
+ * 符号表 (单例)
  * <br>
  * 由于源语言比较简易, 加之 Java 中具有非常好用的通用数据结构类型, 本项目其实并不一定需要一个集中的 "符号表" 来存储源语言中的
  * <b>所有符号的所有信息</b>. 但为了切合理论课程教学, 提高实验实践技能的通用性, 我们按照一般编译器项目中符号表的设计设计了该符号表.
@@ -17,6 +16,8 @@ import java.util.Map;
  */
 public class SymbolTable {
 
+    // [ <"a", SymbolTableEntry{ text: "a", type: INT }>,
+    // <"result", SymbolTableEntry{ text: "result", type: INT }> ]
     private static final Map<String, SymbolTableEntry> entries = new HashMap<>(); // 符号表, 目前只会有变量
 
     /**
@@ -44,7 +45,7 @@ public class SymbolTable {
         if (entries.containsKey(text)) {
             throw new RuntimeException("Symbol already exists: " + text);
         }
-        SymbolTableEntry newEntry = new SymbolTableEntry(text, ""); // 默认类型可以是空字符串或其他初始化值
+        SymbolTableEntry newEntry = new SymbolTableEntry(text); // 默认类型可以是空字符串或其他初始化值
         entries.put(text, newEntry);
         return newEntry;
     }
