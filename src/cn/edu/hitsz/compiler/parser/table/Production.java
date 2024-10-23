@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
  * @param head  该产生式的头
  * @param body  该产生式的体
  */
-public record Production(int index, NonTerminal head, List<Term> body) {
+public record Production(int index, NonTerminal head, List<Term> body) { // 长得有点像 scala
     @Override
     public String toString() {
         final var bodyStr = body.stream().map(Objects::toString).collect(Collectors.joining(" "));
@@ -23,7 +23,7 @@ public record Production(int index, NonTerminal head, List<Term> body) {
     @Override
     public boolean equals(Object obj) {
         return obj instanceof Production production
-            && production.index == index;
+                && production.index == index;
     }
 
     @Override

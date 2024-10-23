@@ -19,25 +19,25 @@ public class TableLoader {
      * @return LRTable
      */
     public LRTable load(String path) {
-        final var csv = FileUtils.readCSV(path);
+        final List<List<String>> csv = FileUtils.readCSV(path);
         // 表头是 状态, ACTION, ..., GOTO, ... 那一行
-        final var tableHeader = csv.get(0);
+        final List<String> tableHeader = csv.get(0);
 
         // 根据该行确定各个部分的列号
-        final var statusColumnIndex = 0;
-        final var actionColumnBegin = 1;
-        final var actionColumnEnd = tableHeader.indexOf("GOTO");
-        final var gotoColumnBegin = actionColumnEnd;
-        final var gotoColumnEnd = tableHeader.size();
+        final int statusColumnIndex = 0;
+        final int actionColumnBegin = 1;
+        final int actionColumnEnd = tableHeader.indexOf("GOTO");
+        final int gotoColumnBegin = actionColumnEnd;
+        final int gotoColumnEnd = tableHeader.size();
 
         // 符号行是存放终结符与非终结符的部分
-        final var symbolHeader = csv.get(1);
-        final var terminals = symbolHeader
-            .subList(actionColumnBegin, actionColumnEnd).stream()
-            .map(TokenKind::fromString).toList();
-        final var nonTerminals = symbolHeader
-            .subList(gotoColumnBegin, gotoColumnEnd).stream()
-            .map(NonTerminal::new).toList();
+        final List<String> symbolHeader = csv.get(1);
+        final List<TokenKind> terminals = symbolHeader
+                .subList(actionColumnBegin, actionColumnEnd).stream()
+                .map(TokenKind::fromString).toList();
+        final List<NonTerminal> nonTerminals = symbolHeader
+                .subList(gotoColumnBegin, gotoColumnEnd).stream()
+                .map(NonTerminal::new).toList();
 
         // 再往下便是表的主体部分
         final var statusRows = csv.subList(2, csv.size());
@@ -78,9 +78,6 @@ public class TableLoader {
         // 返回构造出的 LR 表
         return new LRTable(statusInIndexOrder, terminals, nonTerminals);
     }
-
-    private final List<Status> statusInIndexOrder = new ArrayList<>();
-    private final Map<Integer, Status> statuses = new HashMap<>();
 
     /**
      * 解析 ACTION 表的字符串
@@ -131,4 +128,7 @@ public class TableLoader {
             return statuses.get(Integer.valueOf(text));
         }
     }
+
+    private final List<Status> statusInIndexOrder = new ArrayList<>();
+    private final Map<Integer, Status> statuses = new HashMap<>();
 }

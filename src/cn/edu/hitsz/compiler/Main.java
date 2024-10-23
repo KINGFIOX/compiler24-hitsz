@@ -8,6 +8,7 @@ import cn.edu.hitsz.compiler.parser.ProductionCollector;
 import cn.edu.hitsz.compiler.parser.SemanticAnalyzer;
 import cn.edu.hitsz.compiler.parser.SyntaxAnalyzer;
 import cn.edu.hitsz.compiler.parser.table.GrammarInfo;
+import cn.edu.hitsz.compiler.parser.table.LRTable;
 import cn.edu.hitsz.compiler.parser.table.TableLoader;
 import cn.edu.hitsz.compiler.symtab.SymbolTable;
 import cn.edu.hitsz.compiler.utils.FilePathConfig;
@@ -31,8 +32,8 @@ public class Main {
         symbolTable.dumpTable(FilePathConfig.OLD_SYMBOL_TABLE);
 
         // 读取第三方程序构造的 LR 分析表
-        final var tableLoader = new TableLoader();
-        final var lrTable = tableLoader.load(FilePathConfig.LR1_TABLE_PATH);
+        final TableLoader tableLoader = new TableLoader();
+        final LRTable lrTable = tableLoader.load(FilePathConfig.LR1_TABLE_PATH);
 
         // // 或使用框架自带部分直接从 grammar.txt 构造 LR 分析表
         // final var tableGenerator = new TableGenerator();
@@ -41,12 +42,12 @@ public class Main {
         // lrTable.dumpTable("data/out/lrTable.csv");
 
         // 加载 LR 分析驱动程序
-        final var parser = new SyntaxAnalyzer(symbolTable);
+        final SyntaxAnalyzer parser = new SyntaxAnalyzer(symbolTable);
         parser.loadTokens(tokens);
         parser.loadLRTable(lrTable);
 
         // 加入生成规约列表的 Observer
-        final var productionCollector = new ProductionCollector(GrammarInfo.getBeginProduction());
+        final ProductionCollector productionCollector = new ProductionCollector(GrammarInfo.getBeginProduction());
         parser.registerObserver(productionCollector);
 
         // 加入用作语义检查的 Observer
