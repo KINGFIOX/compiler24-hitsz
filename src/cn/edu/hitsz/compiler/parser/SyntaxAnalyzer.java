@@ -31,7 +31,7 @@ public class SyntaxAnalyzer {
     private final List<ActionObserver> observers = new ArrayList<>();
 
     private LRTable lrTable;
-    private final Stack<Token> tokenStack = new Stack<>(); // 符号栈
+    private final Queue<Token> tokenStack = new ArrayDeque<>();
     private final Stack<Status> statusStack = new Stack<>(); // 状态栈
 
     public SyntaxAnalyzer(SymbolTable symbolTable) {
@@ -88,9 +88,7 @@ public class SyntaxAnalyzer {
         // 你可以自行选择要如何存储词法单元, 譬如使用迭代器, 或是栈, 或是干脆使用一个 list 全存起来
         // 需要注意的是, 在实现驱动程序的过程中, 你会需要面对只读取一个 token 而不能消耗它的情况,
         // 在自行设计的时候请加以考虑此种情况
-        for (final var token : tokens) {
-            tokenStack.add(token);
-        }
+        tokens.forEach(tokenStack::add);
     }
 
     public void loadLRTable(LRTable table) {
@@ -113,9 +111,13 @@ public class SyntaxAnalyzer {
             final Action action = currentStatus.getAction(token);
             switch (action.getKind()) {
                 case Shift -> {
-                    final Status nextStatus = action.getStatus();
-                    statusStack.push(nextStatus);
-                    tokenStack.pop();
+                    final Status shiftTo = action.getStatus();
+                    statusStack.push(shiftTo);
+                    tokenStack.remove();
+
+                    System.err.println("=== Shift ===");
+                    System.err.println("statusStack: " + statusStack);
+                    System.err.println("tokenStack: " + tokenStack);
 
                     callWhenInShift(currentStatus, token);
                 }
@@ -127,6 +129,11 @@ public class SyntaxAnalyzer {
                     final Status newCurrentStatus = statusStack.peek();
                     final Status nextStatus = newCurrentStatus.getGoto(production.head());
                     statusStack.push(nextStatus);
+
+                    System.err.println("=== Reduce ===");
+                    System.err.println("statusStack: " + statusStack);
+                    System.err.println("tokenStack: " + tokenStack);
+
                     callWhenInReduce(currentStatus, production);
                 }
                 case Accept -> {
@@ -144,6 +151,9 @@ public class SyntaxAnalyzer {
                     return;
                 }
                 case Error -> {
+                    System.err.println("=== Error ===");
+                    System.err.println("statusStack: " + statusStack);
+                    System.err.println("tokenStack: " + tokenStack);
                     throw new RuntimeException("Syntax error");
                 }
             }
