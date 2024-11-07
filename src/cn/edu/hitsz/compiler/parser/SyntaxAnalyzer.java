@@ -115,9 +115,9 @@ public class SyntaxAnalyzer {
                     statusStack.push(shiftTo);
                     tokenStack.remove();
 
-                    System.err.println("=== Shift ===");
-                    System.err.println("statusStack: " + statusStack);
-                    System.err.println("tokenStack: " + tokenStack);
+                    // System.err.println("=== Shift ===");
+                    // System.err.println("statusStack: " + statusStack);
+                    // System.err.println("tokenStack: " + tokenStack);
 
                     callWhenInShift(currentStatus, token);
                 }
@@ -130,17 +130,17 @@ public class SyntaxAnalyzer {
                     final Status nextStatus = newCurrentStatus.getGoto(production.head());
                     statusStack.push(nextStatus);
 
-                    System.err.println("=== Reduce ===");
-                    System.err.println("statusStack: " + statusStack);
-                    System.err.println("tokenStack: " + tokenStack);
+                    // System.err.println("=== Reduce ===");
+                    // System.err.println("statusStack: " + statusStack);
+                    // System.err.println("tokenStack: " + tokenStack);
 
                     callWhenInReduce(currentStatus, production);
                 }
                 case Accept -> {
                     // 此时 statusStack 有两个状态: 初始状态, acc 行的状态
-                    System.err.println("=== Accept ===");
-                    System.err.println("statusStack: " + statusStack);
-                    System.err.println("tokenStack: " + tokenStack);
+                    // System.err.println("=== Accept ===");
+                    // System.err.println("statusStack: " + statusStack);
+                    // System.err.println("tokenStack: " + tokenStack);
                     callWhenInAccept(currentStatus);
                     if (statusStack.size() != 2) {
                         throw new IllegalStateException("statusStack.size() != 2");
@@ -151,9 +151,9 @@ public class SyntaxAnalyzer {
                     return;
                 }
                 case Error -> {
-                    System.err.println("=== Error ===");
-                    System.err.println("statusStack: " + statusStack);
-                    System.err.println("tokenStack: " + tokenStack);
+                    // System.err.println("=== Error ===");
+                    // System.err.println("statusStack: " + statusStack);
+                    // System.err.println("tokenStack: " + tokenStack);
                     throw new RuntimeException("Syntax error");
                 }
             }
