@@ -32,7 +32,8 @@ public class AssemblyGenerator {
     private List<Instruction> instructions;
     private final Map<Integer, String> reg = new HashMap<>();
     private final Map<String, Integer> var = new HashMap<>();
-    private final List<String> assembly = new ArrayList<>(List.of(".text"));
+    private final List<String> assembly = new ArrayList<>(
+            List.of("\t.text\n\t.align 1\n\t.globl main\n\t.type main, @function\nmain:"));
 
     /* ---------- func ---------- */
 
@@ -70,15 +71,15 @@ public class AssemblyGenerator {
                     int reg1, reg2;
                     if (operands.getFirst().isImmediate()) {
                         reg1 = getReg("temp1");
-                        assembly.add("    li x%d, %s".formatted(reg1, operands.getFirst().toString()));
+                        assembly.add("\tli x%d, %s".formatted(reg1, operands.getFirst().toString()));
                     } else {
                         reg1 = getReg(ins.getOperands().getFirst().toString());
                     }
                     if (operands.getLast().isImmediate()) {
-                        assembly.add("    addi x%d, x%d, %s\t\t#  %s".formatted(resultReg, reg1, ope2, ins.toString()));
+                        assembly.add("\taddi x%d, x%d, %s\t\t#  %s".formatted(resultReg, reg1, ope2, ins.toString()));
                     } else {
                         reg2 = getReg(ope2);
-                        assembly.add("    add x%d, x%d, x%d\t\t#  %s".formatted(resultReg, reg1, reg2, ins.toString()));
+                        assembly.add("\tadd x%d, x%d, x%d\t\t#  %s".formatted(resultReg, reg1, reg2, ins.toString()));
                     }
                 }
                 case SUB -> {
@@ -88,15 +89,15 @@ public class AssemblyGenerator {
                     int reg1, reg2;
                     if (operands.getFirst().isImmediate()) {
                         reg1 = getReg("temp1");
-                        assembly.add("    li x%d, %s".formatted(reg1, operands.getFirst().toString()));
+                        assembly.add("\tli x%d, %s".formatted(reg1, operands.getFirst().toString()));
                     } else {
                         reg1 = getReg(ins.getOperands().getFirst().toString());
                     }
                     if (operands.getLast().isImmediate()) {
-                        assembly.add("    subi x%d, x%d, %s\t\t#  %s".formatted(resultReg, reg1, ope2, ins.toString()));
+                        assembly.add("\tsubi x%d, x%d, %s\t\t#  %s".formatted(resultReg, reg1, ope2, ins.toString()));
                     } else {
                         reg2 = getReg(ope2);
-                        assembly.add("    sub x%d, x%d, x%d\t\t#  %s".formatted(resultReg, reg1, reg2, ins.toString()));
+                        assembly.add("\tsub x%d, x%d, x%d\t\t#  %s".formatted(resultReg, reg1, reg2, ins.toString()));
                     }
                 }
                 case MUL -> {
@@ -106,35 +107,35 @@ public class AssemblyGenerator {
                     int reg1, reg2;
                     if (operands.getFirst().isImmediate()) {
                         reg1 = getReg("temp1");
-                        assembly.add("    li x%d, %s".formatted(reg1, operands.getFirst().toString()));
+                        assembly.add("\tli x%d, %s".formatted(reg1, operands.getFirst().toString()));
                     } else {
                         reg1 = getReg(ins.getOperands().getFirst().toString());
                     }
                     if (operands.getLast().isImmediate()) {
                         reg2 = getReg("temp2");
-                        assembly.add("    li x%d, %s".formatted(reg1, ope2));
+                        assembly.add("\tli x%d, %s".formatted(reg1, ope2));
                     } else {
                         reg2 = getReg(ope2);
                     }
-                    assembly.add("    mul x%d, x%d, x%d\t\t#  %s".formatted(resultReg, reg1, reg2, ins.toString()));
+                    assembly.add("\tmul x%d, x%d, x%d\t\t#  %s".formatted(resultReg, reg1, reg2, ins.toString()));
                 }
                 case MOV -> {
                     int resultReg = getReg(ins.getResult().toString());
                     List<IRValue> operands = ins.getOperands();
                     String ope = operands.getFirst().toString();
                     if (operands.getFirst().isImmediate()) {
-                        assembly.add("    li x%d, %s\t\t#  %s".formatted(resultReg, ope, ins.toString()));
+                        assembly.add("\tli x%d, %s\t\t#  %s".formatted(resultReg, ope, ins.toString()));
                     } else {
-                        assembly.add("    mv x%d, x%d\t\t#  %s".formatted(resultReg, getReg(ope), ins.toString()));
+                        assembly.add("\tmv x%d, x%d\t\t#  %s".formatted(resultReg, getReg(ope), ins.toString()));
                     }
                 }
                 case RET -> {
                     List<IRValue> operands = ins.getOperands();
                     String ope = operands.getFirst().toString();
                     if (operands.getFirst().isImmediate()) {
-                        assembly.add("    li x10, %s\t\t#  %s".formatted(ope, ins.toString()));
+                        assembly.add("\tli x10, %s\t\t#  %s".formatted(ope, ins.toString()));
                     } else {
-                        assembly.add("    mv x10, x%d\t\t#  %s".formatted(getReg(ope), ins.toString()));
+                        assembly.add("\tmv x10, x%d\t\t#  %s".formatted(getReg(ope), ins.toString()));
                     }
                     hasReturn = true;
                 }
@@ -142,6 +143,7 @@ public class AssemblyGenerator {
             if (hasReturn)
                 break;
         }
+        assembly.add("\tli a7, 93\n\tecall #exit\n\t.size main, .-main");
     }
 
     /**
