@@ -61,7 +61,7 @@ public final class FilePathConfig {
     /**
      * 汇编代码
      */
-    public static final String ASSEMBLY_LANGUAGE_PATH = "data/out/assembly_language.asm";
+    public static final String ASSEMBLY_LANGUAGE_PATH = "data/out/assembly_language.s";
 
     private FilePathConfig() {
     }

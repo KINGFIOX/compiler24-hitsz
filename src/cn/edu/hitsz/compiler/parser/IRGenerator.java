@@ -1,6 +1,5 @@
 package cn.edu.hitsz.compiler.parser;
 
-import cn.edu.hitsz.compiler.NotImplementedException;
 import cn.edu.hitsz.compiler.ir.IRImmediate;
 import cn.edu.hitsz.compiler.ir.IRValue;
 import cn.edu.hitsz.compiler.ir.IRVariable;
@@ -39,15 +38,17 @@ public class IRGenerator implements ActionObserver {
     @Override
     public void whenReduce(Status currentStatus, Production production) {
         switch (production.index()) {
-            case 2 -> {
+            case 2 -> { // S_list -> S ; S_list
                 for (int i = 0; i < 2; i++) {
                     valueStack.removeLast();
                 }
             }
             case 3, 4 -> {
+                // S_list -> S ;
+                // S -> D id
                 valueStack.removeLast();
             }
-            case 6 -> {
+            case 6 -> { // S -> id = E
                 irList.add(
                         Instruction.createMov(
                                 (IRVariable) valueStack.get(valueStack.size() - 3),
@@ -57,7 +58,7 @@ public class IRGenerator implements ActionObserver {
                 }
                 valueStack.add(null);
             }
-            case 7 -> {
+            case 7 -> { // S -> return E
                 irList.add(
                         Instruction.createRet(
                                 valueStack.getLast()));
@@ -66,7 +67,7 @@ public class IRGenerator implements ActionObserver {
                 }
                 valueStack.add(null);
             }
-            case 8 -> {
+            case 8 -> { // E -> E + A
                 IRVariable res;
                 if (valueStack.get(valueStack.size() - 3).isImmediate()) {
                     res = IRVariable.temp();
@@ -85,7 +86,7 @@ public class IRGenerator implements ActionObserver {
                 }
                 valueStack.add(res);
             }
-            case 9 -> {
+            case 9 -> { // E -> E - A
                 IRVariable res;
                 if (valueStack.get(valueStack.size() - 3).isImmediate()) {
                     res = IRVariable.temp();
@@ -104,7 +105,7 @@ public class IRGenerator implements ActionObserver {
                 }
                 valueStack.add(res);
             }
-            case 11 -> {
+            case 11 -> { // A -> A * B
                 IRVariable res;
                 if (valueStack.get(valueStack.size() - 3).isImmediate()) {
                     res = IRVariable.temp();
@@ -121,7 +122,7 @@ public class IRGenerator implements ActionObserver {
                     valueStack.removeLast();
                 valueStack.add(res);
             }
-            case 13 -> {
+            case 13 -> { // B -> ( E )
                 valueStack.removeLast();
                 IRValue tmp = valueStack.getLast();
                 valueStack.removeLast();
@@ -129,6 +130,12 @@ public class IRGenerator implements ActionObserver {
                 valueStack.add(tmp);
             }
             default -> {
+                // P -> S_list
+                // D -> int
+                // E -> A
+                // A -> B
+                // B -> id
+                // B -> IntConst
             }
         }
     }

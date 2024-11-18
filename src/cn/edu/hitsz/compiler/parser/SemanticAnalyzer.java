@@ -2,7 +2,6 @@ package cn.edu.hitsz.compiler.parser;
 
 import java.util.ArrayList;
 
-import cn.edu.hitsz.compiler.NotImplementedException;
 import cn.edu.hitsz.compiler.lexer.Token;
 import cn.edu.hitsz.compiler.parser.table.Production;
 import cn.edu.hitsz.compiler.parser.table.Status;
@@ -17,20 +16,13 @@ public class SemanticAnalyzer implements ActionObserver {
     private final ArrayList<SourceCodeType> dataStack = new ArrayList<>();
 
     @Override
-    public void whenAccept(Status currentStatus) {
-        // // TODO: 该过程在遇到 Accept 时要采取的代码动作
-        // throw new NotImplementedException();
-        // do nothing
-    }
-
-    @Override
     public void whenReduce(Status currentStatus, Production production) {
         // TODO: 该过程在遇到 reduce production 时要采取的代码动作
         switch (production.index()) {
-            case 4 -> {
+            case 4 -> { // S -> D id
                 symbolTable.get(tokenStack.getLast().getText()).setType(dataStack.get(dataStack.size() - 2));
             }
-            case 5 -> {
+            case 5 -> { // D -> int
                 tokenStack.removeLast();
                 dataStack.removeLast();
                 tokenStack.add(null);
@@ -45,6 +37,13 @@ public class SemanticAnalyzer implements ActionObserver {
                 dataStack.add(null);
             }
         }
+    }
+
+    @Override
+    public void whenAccept(Status currentStatus) {
+        // // TODO: 该过程在遇到 Accept 时要采取的代码动作
+        // throw new NotImplementedException();
+        // do nothing
     }
 
     @Override

@@ -1,6 +1,5 @@
 package cn.edu.hitsz.compiler.parser;
 
-import cn.edu.hitsz.compiler.NotImplementedException;
 import cn.edu.hitsz.compiler.lexer.Token;
 import cn.edu.hitsz.compiler.parser.table.Action;
 import cn.edu.hitsz.compiler.parser.table.LRTable;
@@ -13,8 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 import java.util.Stack;
-
-import javax.management.RuntimeErrorException;
 
 //TODO: 实验二: 实现 LR 语法分析驱动程序
 
